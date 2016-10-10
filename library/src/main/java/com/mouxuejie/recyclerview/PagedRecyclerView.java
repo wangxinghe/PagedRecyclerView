@@ -2,6 +2,7 @@ package com.mouxuejie.recyclerview;
 
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,6 +23,8 @@ public class PagedRecyclerView extends RelativeLayout {
 
     private IScrollListener mScrollListener;
 
+    private int mScrollY;
+
     public PagedRecyclerView(Context context) {
         super(context);
         init();
@@ -41,6 +44,22 @@ public class PagedRecyclerView extends RelativeLayout {
         mScrollListener = scrollListener;
     }
 
+    public void setHeaderView(View headerView) {
+        if (headerView == null) return;
+        mHeaderEmptyContainerLL.removeView(headerView);
+        mHeaderEmptyContainerLL.addView(headerView);
+    }
+
+    public void setEmptyView(View emptyView) {
+        if (emptyView == null) return;
+        mEmptyFL.removeView(emptyView);
+        mEmptyFL.addView(emptyView);
+    }
+
+    public void setAdapter(RecyclerView.Adapter adapter) {
+        mRecyclerView.setAdapter(adapter);
+    }
+
     private void init() {
         inflate(getContext(), R.layout.layout_paged_recyclerview, this);
         mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_rl);
@@ -48,6 +67,7 @@ public class PagedRecyclerView extends RelativeLayout {
         mHeaderFL = (FrameLayout)findViewById(R.id.header);
         mEmptyFL = (FrameLayout)findViewById(R.id.empty_view);
         mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -67,22 +87,20 @@ public class PagedRecyclerView extends RelativeLayout {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (mScrollListener != null) {
-                    mScrollListener.loadMore();
+                mScrollY += dy;
+                mHeaderEmptyContainerLL.setTranslationY(mScrollY);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastCompletelyVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+                if (lastCompletelyVisibleItemPosition == recyclerView.getAdapter().getItemCount() - 2) {
+                    if (mScrollListener != null) {
+                        mScrollListener.loadMore();
+                    }
                 }
             }
         });
     }
 
-    public void addHeader(View header) {
-        mHeaderFL.removeView(header);
-        mHeaderFL.addView(header);
-    }
-
-    public void addFooter(View empty) {
-        mEmptyFL.removeView(empty);
-        mEmptyFL.addView(empty);
-    }
 
 
 }

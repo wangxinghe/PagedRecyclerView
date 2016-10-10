@@ -46,6 +46,18 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
         return mList.get(position);
     }
 
+    public void setHeaderView(View headerView) {
+        mHeaderView = headerView;
+    }
+
+    public void setFooterView(View footerView) {
+        mFooterView = footerView;
+    }
+
+    public abstract RecyclerView.ViewHolder createItemViewHolder(View parent);
+
+    public abstract void bindItem(RecyclerView.ViewHolder holder, int position);
+
     private boolean hasHeader() {
         return mHeaderView != null;
     }
@@ -54,16 +66,34 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
         return mFooterView != null;
     }
 
+    private boolean isHeaderView(int position) {
+        return hasHeader() && position == 0;
+    }
+
+    private boolean isFooterView(int position) {
+        return hasFooter() && position == getItemCount() - 1;
+    }
+
     @Override
     public int getItemCount() {
-        return mList != null ? mList.size() + 2 : 2;
+        int count = 0;
+        if (mList != null) {
+            count += mList.size();
+        }
+        if (hasHeader()) {
+            count += 1;
+        }
+        if (hasFooter()) {
+            count += 1;
+        }
+        return count;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (isHeaderView(position)) {
             return VIEW_TYPE_HEADER;
-        } else if (position == getItemCount() - 1) {
+        } else if (isFooterView(position)) {
             return VIEW_TYPE_FOOTER;
         } else {
             return VIEW_TYPE_ITEM;
@@ -103,7 +133,4 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
         }
     }
 
-    public abstract RecyclerView.ViewHolder createItemViewHolder(View parent);
-
-    public abstract void bindItem(RecyclerView.ViewHolder holder, int position);
 }
