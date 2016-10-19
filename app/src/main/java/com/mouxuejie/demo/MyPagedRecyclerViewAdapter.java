@@ -1,13 +1,13 @@
 package com.mouxuejie.demo;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mouxuejie.recyclerview.PagedRecyclerViewAdapter;
-
-import java.util.List;
 
 /**
  * Created by wangxinghe1 on 2016/10/10.
@@ -15,13 +15,13 @@ import java.util.List;
 
 public class MyPagedRecyclerViewAdapter extends PagedRecyclerViewAdapter<PersonBean> {
 
-    public MyPagedRecyclerViewAdapter(List<PersonBean> list) {
-        super(list);
+    public MyPagedRecyclerViewAdapter(Context context) {
+        super(context);
     }
 
     @Override
-    public RecyclerView.ViewHolder createItemViewHolder(View parent) {
-        return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_view, null));
+    public RecyclerView.ViewHolder createItemViewHolder(ViewGroup parent) {
+        return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_view, parent, false));
     }
 
     @Override

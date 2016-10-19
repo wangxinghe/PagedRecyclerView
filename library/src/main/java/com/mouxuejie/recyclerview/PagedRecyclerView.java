@@ -8,13 +8,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 /**
  * Created by wangxinghe1 on 2016/10/10.
  */
 
-public class PagedRecyclerView extends RelativeLayout {
+public class PagedRecyclerView extends FrameLayout {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayout mHeaderEmptyContainerLL;
     private FrameLayout mHeaderFL;
@@ -58,6 +57,10 @@ public class PagedRecyclerView extends RelativeLayout {
 
     public void setAdapter(RecyclerView.Adapter adapter) {
         mRecyclerView.setAdapter(adapter);
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     private void init() {

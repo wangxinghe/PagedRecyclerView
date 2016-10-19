@@ -1,10 +1,12 @@
 package com.mouxuejie.recyclerview;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.mouxuejie.recyclerview.bean.Bean;
+import com.mouxuejie.recyclerview.view.FooterView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,23 +20,27 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
     private static final int VIEW_TYPE_FOOTER = 1;
     private static final int VIEW_TYPE_ITEM = 2;
 
+    public static final int SIZE_PER_PAGE = 20;
+
     private List<T> mList = new ArrayList<>();
     private View mHeaderView;
-    private View mFooterView;
+    private FooterView mFooterView;
 
-    public PagedRecyclerViewAdapter(List<T> list) {
-        mList = list;
+    public PagedRecyclerViewAdapter(Context context) {
+        mFooterView = new FooterView(context);
     }
 
     public void refresh(List<T> list) {
         mList.clear();
         mList.addAll(list);
         notifyDataSetChanged();
+        updateFooterViewByState(list);
     }
 
     public void add(List<T> list) {
         mList.addAll(list);
         notifyDataSetChanged();
+        updateFooterViewByState(list);
     }
 
     public void clear() {
@@ -51,10 +57,10 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
     }
 
     public void setFooterView(View footerView) {
-        mFooterView = footerView;
+//        mFooterView = footerView;
     }
 
-    public abstract RecyclerView.ViewHolder createItemViewHolder(View parent);
+    public abstract RecyclerView.ViewHolder createItemViewHolder(ViewGroup parent);
 
     public abstract void bindItem(RecyclerView.ViewHolder holder, int position);
 
@@ -72,6 +78,14 @@ public abstract class PagedRecyclerViewAdapter<T extends Bean> extends RecyclerV
 
     private boolean isFooterView(int position) {
         return hasFooter() && position == getItemCount() - 1;
+    }
+
+    private void updateFooterViewByState(List<T> rList) {
+        if (rList.size() == 0 || rList.size() < SIZE_PER_PAGE) {
+            mFooterView.showEndView();
+        } else {
+            mFooterView.showLoadingView();
+        }
     }
 
     @Override
